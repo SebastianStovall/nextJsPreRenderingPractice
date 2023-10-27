@@ -29,7 +29,10 @@ export async function getStaticProps(context) {
   return {
     props: {
       events: featuredEvents
-    }
+    },
+    revalidate: 1800
+    // every half hour we regenerate this page for a new incoming request (here so we dont need to redeploy our site each time we want the latest data in the home page)
+    // every half hour is a good time since the home page will not change that often
   }
 
 }

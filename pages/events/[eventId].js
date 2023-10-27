@@ -1,5 +1,5 @@
 // new import fetched from api-utils from backend
-import { getAllEvents, getEventById } from '../../helpers/api-util'
+import { getAllEvents, getEventById, getFeaturedEvents } from '../../helpers/api-util'
 
 import EventSummary from "../../components/event-detail/event-summary"
 import EventLogistics from "../../components/event-detail/event-logistics"
@@ -37,14 +37,19 @@ export async function getStaticProps(context) {
     return {
         props: {
             singleEvent: eventDetails
-        }
+        },
+        revalidate: 30
+        // if a new request comes in and its been more than 30 seconds since this page has last been updated, it will be generated again to update the data
+        // the time is more sensitive since changing of an event's details could occur frequently
     }
 }
 
 // tell next.js which eventId's you want pre-rendered with the getStaticPaths() functions
-export async function getStaticPaths(context) { // remember that context here allows us access the the req object
+export async function getStaticPaths(context) {
 
     // we want all event pages to be pre-rendered, so we run getAllEvents() and extract their id's so we can map them in the return paths object
+    // if this were a real application, consider only fetching the FEATURED EVENTS, and include those in the paths to optimize performance times, have non-feautured sites
+    // load on-the-fly in your fallback key (fallback = true)
     const events = await getAllEvents()
     const paths = events.map( (event) => ( {params: {eventId: event.id}} ) )
 
@@ -57,3 +62,39 @@ export async function getStaticPaths(context) { // remember that context here al
 }
 
 export default EventDetailPage
+
+
+
+
+// IF YOU ONLY WANT FEATURED EVENTS PRE-GENERATED WITH STATIC PATHS, THIS IS WHAT IT WOULD LOOK LIKE
+
+// function EventDetailPage(props) {
+//     const event = props.singleEvent
+
+//     if(!event) return <p className='center'>...Loading</p>                 <----- IF NON-FEATURED EVENT, THIS MIGHT SHOW UP CAUSE IT WILL TAKE LONGER TO FETCH
+
+//     return (
+//         <>
+//             <EventSummary title={event.title} />
+//             <EventLogistics
+//                 date={event.date}
+//                 address={event.location}
+//                 image={event.image}
+//                 imageAlt={event.title}
+//             />
+//             <EventContent>
+//                 <p>{event.description}</p>
+//             </EventContent>
+//         </>
+//     )
+// }
+
+// export async function getStaticPaths(context) {
+//     const events = await getFeaturedEvents()                                       <---- GRAB FEATURED EVENTS ONLY
+//     const paths = events.map( (event) => ( {params: {eventId: event.id}} ) )
+
+//     return {
+//         paths: paths,
+//         fallback: true                                      <-------------- FALLBACK = TRUE
+//     }
+// }
