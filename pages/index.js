@@ -1,3 +1,5 @@
+// THIS IMPORT IS FOR ADDING METADATA TO YOUR PAGES THAT ARE GREAT FOR SCREEN CRAWLERS READING YOUR WEB PAGES
+import Head from 'next/head'
 
 // new import using data from an actual backend
 import { getFeaturedEvents } from "../helpers/api-util";
@@ -10,6 +12,13 @@ function HomePage(props) {
 
   return (
     <div>
+        {/* we can use the head tag to set a title and description of the page (the title of this page will be shown on the browser tab) */}
+        {/* your able to add any tag here that would normally show up in the <head></head> on a HTML page */}
+        <Head>
+          <title>NextJS Events</title>
+          <meta name='description' content='Find a lot of great events all in one place!' />
+        </Head>
+
         <h1 style={{textAlign: "center"}}>Featured Events</h1>
         <EventList items={events} />
     </div>

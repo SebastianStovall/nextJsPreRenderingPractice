@@ -1,6 +1,9 @@
 // new import fetched from api-utils from backend
 import { getAllEvents, getEventById, getFeaturedEvents } from '../../helpers/api-util'
 
+// import to optimize screen crawlers and SEO
+import Head from 'next/head'
+
 import EventSummary from "../../components/event-detail/event-summary"
 import EventLogistics from "../../components/event-detail/event-logistics"
 import EventContent from "../../components/event-detail/event-content"
@@ -10,10 +13,22 @@ function EventDetailPage(props) {
     // useRouter hook no longer needed since data is now being proped in by getStaticProps() function
     const event = props.singleEvent
 
+    const headData = (
+        <Head>
+            {/* ABLE TO INJECT DYNAMIC CONTENT INTO HEAD FOR EACH EVENT */}
+            {/* dynamic values here */}
+            <title>{event.title}</title>
+            <meta name='description' content={event.description} />
+        </Head>
+    )
+
     if(!event) return <p>No event found</p>
 
     return (
         <>
+            {/* makes head data reusable */}
+            {headData}
+
             <EventSummary title={event.title} />
             <EventLogistics
                 date={event.date}
